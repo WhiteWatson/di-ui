@@ -1,4 +1,7 @@
 import axios from 'axios'
+//import Cookies from 'js-cookie'
+//import router from '../router'
+import { Message } from 'element-ui'
 const showStatus = (status) => {
     let message = ''
     switch (status) {
@@ -43,7 +46,7 @@ const showStatus = (status) => {
 
 const service = axios.create({
     // 联调
-    baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}/api`,
+    baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}`,
     headers: {
         get: {
             'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
@@ -52,18 +55,30 @@ const service = axios.create({
             'Content-Type': 'application/json;charset=utf-8'
         }
     },
-    timeout: 30000,
-    validateStatus() {
-        // 使用async-await，处理reject情况较为繁琐，所以全部返回resolve，在业务代码中处理异常
-        return true
-    }
+    timeout: 30000
 })
+//是否使用默认统一全局弹窗，默认使用
+let isShowToast = true
 
 // 请求拦截器
 service.interceptors.request.use((config) => {
+    let { data } = config
+    if (data) { isShowToast = data.isShowToast }
+    delete data.isShowToast
+    console.log(config)
+    
+    //可以开启全局loading
+    //const token = Cookies.get('token')
+    //判断token
+    // if(token){
+    //     config.headers.token=token
+    // }else{
+    //     router.push('/login')
+    // }
     return config
 }, (error) => {
     // 错误抛到业务代码
+
     error.data = {}
     error.data.msg = '服务器异常，请联系管理员！'
     return Promise.resolve(error)
@@ -76,6 +91,12 @@ service.interceptors.response.use((response) => {
     if (status < 200 || status >= 300) {
         // 处理http错误，抛到业务代码
         msg = showStatus(status)
+        if (isShowToast) {
+            Message({
+                message: msg,
+                type: 'warning'
+            })
+        }
 
         if (typeof response.data === 'string') {
             response.data = { msg }
@@ -83,59 +104,30 @@ service.interceptors.response.use((response) => {
             response.data.msg = msg
         }
     }
-    return response
+
+    const data = response.data
+    if (data.errorCode != '0000' && isShowToast) {
+
+        Message({
+            message: data.msg,
+            type: 'warning'
+        })
+    }
+    return response.data
 }, (error) => {
     // 错误抛到业务代码
-    error.data = {}
-    error.data.msg = '请求超时或服务器异常，请检查网络或联系管理员！'
-    return Promise.resolve(error)
+    console.log(error)
+    let errorMsg = {}
+    errorMsg.errorCode = -1
+    errorMsg.data = null
+    errorMsg.msg = error
+    Message({
+        message: '服务器异常，请联系管理员！',
+        type: 'warning'
+    })
+    return Promise.resolve(errorMsg)
 })
-/**
- * 封装get方法
- * @param url
- * @param data
- * @returns {Promise}
- */
-
-const get = function (url, param = {}) {
-    return new Promise((resolve, reject) => {
-        service.get(url, {
-            params: param,
-        })
-            .then(response => {
-                console.log(response)
-                resolve(response.data);
-            })
-            .catch(err => {
-                // resolve({
-                //     code: "no",
-                //     msg: err.err
-                // });
-                reject(err)
-            })
-    })
+const $http = (options) => {
+    return service(options)
 }
-
-const post = function (url, param = {}) {
-    return new Promise((resolve) => {
-        service.post(url, param).then(response => {
-            resolve(response.data);
-
-        }).catch(err => {
-            resolve(err);
-        })
-    })
-}
-export default {
-    install: function (Vue) {
-        Object.defineProperty(Vue.prototype, "$http", {
-            value: service
-        });
-        Object.defineProperty(Vue.prototype, "$get", {
-            value: get
-        });
-        Object.defineProperty(Vue.prototype, "$post", {
-            value: post
-        });
-    }
-}
+export default $http
