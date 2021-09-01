@@ -1,7 +1,31 @@
-.k-and311{
+@import '@/style/_variable.less';
+
+.k-and311 {
     width: 200px;
     position: absolute;
     top: 50px;
     bottom: 0;
-    background: #fff;
+    background: @k-menuBackground;
+    .el-submenu__title {
+        color: @k-menuColor;
+    }
+    .el-submenu__title:hover{
+        background-color:@k-hoverBackground;
+    }
+    i{
+        color: @k-menuColor;
+    }
+    .el-menu {
+        background-color: @k-menuBackground;
+    }
+    .el-menu-item{
+        color: @k-menuColor;
+    }
+    .el-menu-item:hover{
+        background-color:@k-hoverBackground;
+    }
+    .is-active{
+        background-color: @k-activeBackground;
+        color: @k-activeColor;
+    }
 }

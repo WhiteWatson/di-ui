@@ -52,7 +52,7 @@ export default {
       const {errorCode,data} =await this.$http.login.login({...this.loginForm, isShowToast:true})
       if(errorCode === '0000'){
         Cookie.set('token',data.token)
-        this.$router.push('/home')
+        this.$router.push('/')
       }
 
     },
