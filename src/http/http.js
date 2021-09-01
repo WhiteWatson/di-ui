@@ -1,7 +1,8 @@
 import axios from 'axios'
-//import Cookies from 'js-cookie'
-//import router from '../router'
+import Cookies from 'js-cookie'
+import router from '../router'
 import { Message } from 'element-ui'
+import errorList from './errorCode'
 const showStatus = (status) => {
     let message = ''
     switch (status) {
@@ -46,14 +47,12 @@ const showStatus = (status) => {
 
 const service = axios.create({
     // 联调
+    method: 'get',
+    // 参数(必须要有，不然get传params没有data会报错)
+    data: {},
     baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}`,
     headers: {
-        get: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8'
-        },
-        post: {
-            'Content-Type': 'application/json;charset=utf-8'
-        }
+        'Content-Type': 'application/json;charset=utf-8'
     },
     timeout: 30000
 })
@@ -63,55 +62,72 @@ let isShowToast = true
 // 请求拦截器
 service.interceptors.request.use((config) => {
     let { data } = config
-    if (data) { isShowToast = data.isShowToast }
+    console.log(data)
+    if (data.isShowToast) { isShowToast = data.isShowToast }
     delete data.isShowToast
     console.log(config)
-    
+
     //可以开启全局loading
-    //const token = Cookies.get('token')
+    const token = Cookies.get('token')
     //判断token
-    // if(token){
-    //     config.headers.token=token
-    // }else{
-    //     router.push('/login')
-    // }
+    if (token) {
+        config.headers.token = token
+    } else {
+        if (config.url !== '/login') {
+            router.push('/login')
+            return
+        }
+    }
     return config
 }, (error) => {
     // 错误抛到业务代码
 
     error.data = {}
-    error.data.msg = '服务器异常，请联系管理员！'
+    error.data.message = '服务器异常，请联系管理员！'
     return Promise.resolve(error)
 })
 
 // 响应拦截器
 service.interceptors.response.use((response) => {
     const status = response.status
-    let msg = ''
+    let message = ''
     if (status < 200 || status >= 300) {
         // 处理http错误，抛到业务代码
-        msg = showStatus(status)
+        message = showStatus(status)
         if (isShowToast) {
             Message({
-                message: msg,
+                message: message,
                 type: 'warning'
             })
         }
 
         if (typeof response.data === 'string') {
-            response.data = { msg }
+            response.data = { message }
         } else {
-            response.data.msg = msg
+            response.data.message = message
         }
     }
 
-    const data = response.data
-    if (data.errorCode != '0000' && isShowToast) {
-
+    const { errorCode } = response.data
+    if (errorCode != '0000' && isShowToast) {
+        let message;
+        switch (errorCode) {
+            case '0001':
+                Cookies.remove('token')
+                message = errorList[errorCode]
+                router.push('/login')
+                break
+            case '0002':
+                message = errorList[errorCode]
+                break
+            default:
+                message = response.data.message
+        }
         Message({
-            message: data.msg,
+            message: message,
             type: 'warning'
         })
+
     }
     return response.data
 }, (error) => {
@@ -120,7 +136,7 @@ service.interceptors.response.use((response) => {
     let errorMsg = {}
     errorMsg.errorCode = -1
     errorMsg.data = null
-    errorMsg.msg = error
+    errorMsg.message = error
     Message({
         message: '服务器异常，请联系管理员！',
         type: 'warning'

@@ -1,42 +1,50 @@
 <template>
   <div class="k-and311">
     <el-menu
-      default-active="2"
+      :default-active="$route.path"
       class="el-menu-vertical-demo"
+      router
       @open="handleOpen"
       @close="handleClose"
+      @select="selectMenu"
     >
-      <el-submenu index="1">
-        <template slot="title">
-          <i class="el-icon-location"></i>
-          <span>导航一</span>
-        </template>
-       <el-menu-item index="1-1">选项1</el-menu-item>
-       <el-menu-item index="1-2">选项2</el-menu-item>
-        <el-submenu index="1-4">
-          <template slot="title">选项4</template>
-          <el-menu-item index="1-4-1">选项1</el-menu-item>
-        </el-submenu>
-      </el-submenu>
+      <menuItem v-for="item in navTree" :key="item.id" :item="item"> </menuItem>
     </el-menu>
   </div>
 </template>
 <script>
 import { Menu, MenuItemGroup, MenuItem, Submenu } from "element-ui";
 import Vue from "vue";
+import { mapState } from "vuex";
+import menuItem from "./component/menuItem.vue";
 Vue.use(Menu);
 Vue.use(MenuItemGroup);
 Vue.use(MenuItem);
 Vue.use(Submenu);
 export default {
-    methods:{
-        handleOpen(s){
-            console.log(s)
-        },
-        handleClose(s){
-            console.log(s)
-        }
+  components: {
+    menuItem,
+  },
+  data() {
+    return {};
+  },
+  computed: {
+    ...mapState("navMenu", ["navTree"]),
+  },
+  methods: {
+    handleOpen(s) {
+      console.log(s);
+    },
+    handleClose(s) {
+      console.log(s);
+    },
+    selectMenu(s,d){
+      console.log(s,d)
     }
+  },
+  async created() {
+    console.log(this.$route)
+  },
 };
 </script>
-<style lang="less" src='./index.less'></style>
+<style lang="less" src="./index.less"></style>

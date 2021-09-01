@@ -4,7 +4,7 @@
       <el-form ref="form" :model="loginForm" label-width="80px">
         <el-form-item label-width="0">
           <el-input
-            v-model="loginForm.username"
+            v-model="loginForm.account"
             placeholder="用户名"
           ></el-input>
         </el-form-item>
@@ -49,7 +49,7 @@ export default {
   },
   methods:{
     async login(){
-      const {errorCode,data} =await this.$http.login.login({ a: 1 , isShowToast:false})
+      const {errorCode,data} =await this.$http.login.login({...this.loginForm, isShowToast:true})
       if(errorCode === '0000'){
         Cookie.set('token',data.token)
         this.$router.push('/home')
