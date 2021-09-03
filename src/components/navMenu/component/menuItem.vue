@@ -10,7 +10,7 @@
       </template>
       <menuItem v-for="tree in item.children" :item="tree" :key="tree.id" />
     </el-submenu>
-    <el-menu-item  v-else :index="item.url">
+    <el-menu-item v-else :index="item.url">
       <i :class="item.icon"></i>
       <span slot="title">{{ item.name }}</span>
     </el-menu-item>
@@ -27,7 +27,8 @@ export default {
   methods:{
       handleRoute(item){
           this.$router.push(item.url)
-      }
+      },
+     
   }
 };
 </script>

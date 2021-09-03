@@ -13,7 +13,7 @@ export default {
        async addMenuList({commit}) {
             const { errorCode, data } = await $http.menu.menuList();
             if (errorCode != "0000") {
-                return;
+                return false;
             }
             commit('setNavTree',data)
             return data

@@ -4,9 +4,6 @@
       :default-active="$route.path"
       class="el-menu-vertical-demo"
       router
-      @open="handleOpen"
-      @close="handleClose"
-      @select="selectMenu"
     >
       <menuItem v-for="item in navTree" :key="item.id" :item="item"> </menuItem>
     </el-menu>
@@ -30,21 +27,7 @@ export default {
   },
   computed: {
     ...mapState("navMenu", ["navTree"]),
-  },
-  methods: {
-    handleOpen(s) {
-      console.log(s);
-    },
-    handleClose(s) {
-      console.log(s);
-    },
-    selectMenu(s,d){
-      console.log(s,d)
-    }
-  },
-  async created() {
-    console.log(this.$route)
-  },
+  }
 };
 </script>
 <style lang="less" src="./index.less"></style>

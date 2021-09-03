@@ -24,6 +24,7 @@ const addRoutes = (menuList = [], routes = []) => {
       routes.push({
         name: menuList[i].name,
         path: menuList[i].url,
+        // 路由文件写在url下，如/sys/user就在sys下创建user.vue文件
         component: () => import(`@/view/content${menuList[i].url}`),
       })
     }
@@ -48,18 +49,30 @@ router.beforeEach(async (to, from, next) => {
     return
   }
   // 加载动态菜单和路由
-  if(store.state.navMenu.navTree.length<=0){
-  const menuList = await store.dispatch('navMenu/addMenuList')
-  let routes =await addRoutes(menuList)
-  for (let childRoutes of routes) {
-    //为名为‘首页’的路由添加子路由
-    router.addRoute('首页',childRoutes)
+  const menuTree = store.state.navMenu.navTree;
+  console.log(from)
+  if (menuTree && menuTree.length == 0) {
+    const menuList = await store.dispatch('navMenu/addMenuList')
+    if(!menuList){
+      next()
+      return
+    }
+    let routes = await addRoutes(menuList)
+    for (let childRoutes of routes) {
+      //为名为‘首页’的路由添加子路由
+      router.addRoute('首页', childRoutes)
+    }
+    //如果首次或者刷新界面，这里会循环遍历路由，如果to找不到对应的路由那么他会再执行一次beforeEach((to, from, next))直到找到对应的路由
+    next({ ...to, replace: true })
+    return
   }
-  //如果首次或者刷新界面，这里会循环遍历路由，如果to找不到对应的路由那么他会再执行一次beforeEach((to, from, next))直到找到对应的路由
-  next({...to, replace: true})
-}
   next()
 
 
 })
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
 export default router;

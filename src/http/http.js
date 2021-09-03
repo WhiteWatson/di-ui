@@ -3,6 +3,7 @@ import Cookies from 'js-cookie'
 import router from '../router'
 import { Message } from 'element-ui'
 import errorList from './errorCode'
+import { Loading } from 'element-ui';
 const showStatus = (status) => {
     let message = ''
     switch (status) {
@@ -56,18 +57,20 @@ const service = axios.create({
     },
     timeout: 30000
 })
+//请求是否使用全局loading 默认使用
+let loading = true
 //是否使用默认统一全局弹窗，默认使用
 let isShowToast = true
-
+let loadingInstance;
 // 请求拦截器
 service.interceptors.request.use((config) => {
     let { data } = config
-    console.log(data)
-    if (data.isShowToast) { isShowToast = data.isShowToast }
-    delete data.isShowToast
-    console.log(config)
+    if (data.isShowToast) { isShowToast = data.isShowToast; delete data.isShowToast }
+    if(data.loading) {loading = data.loading; delete data.loading}
 
     //可以开启全局loading
+    if (loading) loadingInstance=Loading.service();
+
     const token = Cookies.get('token')
     //判断token
     if (token) {
@@ -81,7 +84,8 @@ service.interceptors.request.use((config) => {
     return config
 }, (error) => {
     // 错误抛到业务代码
-
+     //关闭弹窗
+    if (loading) loadingInstance.close()
     error.data = {}
     error.data.message = '服务器异常，请联系管理员！'
     return Promise.resolve(error)
@@ -91,6 +95,9 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
     const status = response.status
     let message = ''
+    //关闭弹窗
+    if (loading) loadingInstance.close()
+
     if (status < 200 || status >= 300) {
         // 处理http错误，抛到业务代码
         message = showStatus(status)
@@ -141,6 +148,8 @@ service.interceptors.response.use((response) => {
         message: '服务器异常，请联系管理员！',
         type: 'warning'
     })
+     //关闭弹窗
+    if (loading) loadingInstance.close()
     return Promise.resolve(errorMsg)
 })
 const $http = (options) => {

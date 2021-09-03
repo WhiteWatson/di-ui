@@ -1,20 +1,13 @@
 import vuex from 'vuex'
 import Vue from 'vue'
-import navMenu from '@/view/content/navMenu/store'
+import navMenu from '@/components/navMenu/store'
+import tabs from '@/components/mainContent/component/tabs/store'
 Vue.use(vuex)
 export default new vuex.Store(
     {
-        modules:{
-            navMenu
-        },
-        state:{
-
-        },
-        mutations:{
-
-        },
-        actions:{
-            
+        modules: {
+            navMenu,
+            tabs
         }
     }
 )
