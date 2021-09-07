@@ -19,7 +19,6 @@ import navMenu from "@/components/navMenu";
 import mainContent from "@/components/mainContent";
 import headerBar from "@/components/headerBar";
 import { mapState } from "vuex"; 
-console.log(mapState)
 export default {
   components: {
     navMenu,
