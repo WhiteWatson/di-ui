@@ -4,7 +4,6 @@
       v-model="bars.tabsValue"
       type="card"
       closable
-     
       @tab-click="handleTabsClick"
       @tab-remove="removeTab"
     >
@@ -23,7 +22,9 @@ import { Tabs, TabPane } from "element-ui";
 import Vue from "vue";
 Vue.use(Tabs);
 Vue.use(TabPane);
-import { mapActions, mapState,mapMutations } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
+import { setItem, getItem } from "@/utils/storage";
+ console.log(setItem)
 export default {
   data() {
     return {};
@@ -31,12 +32,12 @@ export default {
   watch: {
     $route: {
       handler: function(item) {
-        let sessionBar = sessionStorage.getItem("bars")
+        let sessionBar =getItem("bars");
         //如果有tab缓存并且id为0(代表页面是否重置)才会取缓存的tab
-        if(this.bars.id==0 && sessionBar){
-            this.setBars(JSON.parse(sessionBar))
+        if (this.bars.id == 0 && sessionBar) {
+          this.setBars(sessionBar)
         }
-        
+
         const tabs = this.bars.tabsList;
         const isAdd = tabs.find((arg) => {
           return arg.title === item.name;
@@ -47,7 +48,7 @@ export default {
           return;
         }
         this.addTabs(item);
-        sessionStorage.setItem("bars",JSON.stringify(this.bars))
+        setItem("bars", this.bars);
       },
       deep: true,
       immediate: true,
@@ -57,8 +58,13 @@ export default {
     ...mapState("tabs", ["bars"]),
   },
   methods: {
-    ...mapMutations('tabs',["setBars"]),
-    ...mapActions("tabs", ["handleTabsEdit", "addTabs", "handleTabsClick","removeTab"]),
+    ...mapMutations("tabs", ["setBars"]),
+    ...mapActions("tabs", [
+      "handleTabsEdit",
+      "addTabs",
+      "handleTabsClick",
+      "removeTab",
+    ]),
   },
 };
 </script>

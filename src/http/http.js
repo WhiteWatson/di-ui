@@ -49,8 +49,6 @@ const showStatus = (status) => {
 const service = axios.create({
     // 联调
     method: 'get',
-    // 参数(必须要有，不然get传params没有data会报错)
-    data: {},
     baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}`,
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -65,9 +63,9 @@ let loadingInstance;
 // 请求拦截器
 service.interceptors.request.use((config) => {
     let { data } = config
+    console.log(data)
     if (data.isShowToast) { isShowToast = data.isShowToast; delete data.isShowToast }
     if(data.loading) {loading = data.loading; delete data.loading}
-
     //可以开启全局loading
     if (loading) loadingInstance=Loading.service();
 
@@ -76,7 +74,8 @@ service.interceptors.request.use((config) => {
     if (token) {
         config.headers.token = token
     } else {
-        if (config.url !== '/login') {
+        console.log(router.$router)
+        if (router.app._route.name !== 'login') {
             router.push('/login')
             return
         }
@@ -95,6 +94,7 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
     const status = response.status
     let message = ''
+   
     //关闭弹窗
     if (loading) loadingInstance.close()
 
@@ -153,6 +153,10 @@ service.interceptors.response.use((response) => {
     return Promise.resolve(errorMsg)
 })
 const $http = (options) => {
+    options.data={}
+    if(options.method==='get'){
+        options.params = options.data
+    }
     return service(options)
 }
 export default $http

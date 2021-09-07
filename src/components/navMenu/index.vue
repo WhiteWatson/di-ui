@@ -3,6 +3,7 @@
     <el-menu
       :default-active="$route.path"
       class="el-menu-vertical-demo"
+     :collapse="collapse"
       router
     >
       <menuItem v-for="item in navTree" :key="item.id" :item="item"> </menuItem>
@@ -26,7 +27,7 @@ export default {
     return {};
   },
   computed: {
-    ...mapState("navMenu", ["navTree"]),
+    ...mapState("navMenu", ["navTree","collapse"]),
   }
 };
 </script>

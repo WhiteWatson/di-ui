@@ -2,11 +2,15 @@ import $http from '@/http/api'
 export default {
     namespaced: true,
     state: {
-        navTree: []
+        navTree: [],
+        collapse:false
     },
     mutations: {
         setNavTree(state, data) {
             state.navTree = data
+        },
+        setCollapse(state,data){
+            state.collapse = data
         }
     },
     actions: {

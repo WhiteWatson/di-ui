@@ -1,7 +1,7 @@
 import $http from '../http'
 const login = (data) => {
     return $http({
-        url:'/login',
+        url:'/api/user/login',
         method:'post',
         data
     })

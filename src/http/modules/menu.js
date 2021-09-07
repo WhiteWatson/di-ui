@@ -1,9 +1,9 @@
 import $http from '../http'
-const menuList = (params) => {
+const menuList = (data) => {
     return $http({
-        url:'/menu',
+        url:'/api/menu/menulist',
         method:'get',   
-        params
+        data
     })
 }
 export {

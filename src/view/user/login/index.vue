@@ -4,7 +4,7 @@
       <el-form ref="form" :model="loginForm" label-width="80px">
         <el-form-item label-width="0">
           <el-input
-            v-model="loginForm.account"
+            v-model="loginForm.username"
             placeholder="用户名"
           ></el-input>
         </el-form-item>
@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       loginForm: {
-        account: "",
+        username: "",
         password: "",
       },
     };
