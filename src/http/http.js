@@ -65,9 +65,9 @@ service.interceptors.request.use((config) => {
     let { data } = config
     console.log(data)
     if (data.isShowToast) { isShowToast = data.isShowToast; delete data.isShowToast }
-    if(data.loading) {loading = data.loading; delete data.loading}
+    if (data.loading) { loading = data.loading; delete data.loading }
     //可以开启全局loading
-    if (loading) loadingInstance=Loading.service();
+    if (loading) loadingInstance = Loading.service({ background: 'rgba(0, 0, 0, 0.3)' });
 
     const token = Cookies.get('token')
     //判断token
@@ -83,7 +83,7 @@ service.interceptors.request.use((config) => {
     return config
 }, (error) => {
     // 错误抛到业务代码
-     //关闭弹窗
+    //关闭弹窗
     if (loading) loadingInstance.close()
     error.data = {}
     error.data.message = '服务器异常，请联系管理员！'
@@ -94,7 +94,7 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
     const status = response.status
     let message = ''
-   
+
     //关闭弹窗
     if (loading) loadingInstance.close()
 
@@ -116,24 +116,27 @@ service.interceptors.response.use((response) => {
     }
 
     const { errorCode } = response.data
-    if (errorCode != '0000' && isShowToast) {
+    if (errorCode != '0000') {
         let message;
         switch (errorCode) {
-            case '0001':
+            case '1004':
                 Cookies.remove('token')
                 message = errorList[errorCode]
                 router.push('/login')
                 break
-            case '0002':
+            case '1001':
                 message = errorList[errorCode]
                 break
             default:
                 message = response.data.message
         }
-        Message({
-            message: message,
-            type: 'warning'
-        })
+        if (isShowToast) {
+            Message({
+                message: message,
+                type: 'warning'
+            })
+        }
+
 
     }
     return response.data
@@ -148,13 +151,14 @@ service.interceptors.response.use((response) => {
         message: '服务器异常，请联系管理员！',
         type: 'warning'
     })
-     //关闭弹窗
+    //关闭弹窗
     if (loading) loadingInstance.close()
     return Promise.resolve(errorMsg)
 })
 const $http = (options) => {
-    options.data={}
-    if(options.method==='get'){
+    if (!options.data) { options.data = {} }
+
+    if (options.method === 'get') {
         options.params = options.data
     }
     return service(options)
