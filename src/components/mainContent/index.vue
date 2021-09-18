@@ -1,7 +1,9 @@
 <template>
     <div>
         <tabBar />
+        <div class="k-owao1y">
         <router-view />
+        </div>
     </div>
 </template>
 <script>
@@ -12,3 +14,8 @@ export default {
     }
 }
 </script>
+<style lang="less">
+.k-owao1y{
+    padding: 10px;
+}
+</style>

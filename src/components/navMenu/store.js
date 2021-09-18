@@ -15,7 +15,7 @@ export default {
     },
     actions: {
        async addMenuList({commit}) {
-            const { errorCode, data } = await $http.menu.menuList();
+            const { errorCode, data } = await $http.menuList();
             if (errorCode != "0000") {
                 return false;
             }

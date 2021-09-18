@@ -1,6 +1,8 @@
-import * as login from './modules/login'
-import * as menu from './modules/menu'
+import login from './modules/login'
+import menu from './modules/menu'
+import userList from './modules/user'
 export default{
-    login,
-    menu
+    ...login,
+    ...menu,
+    ...userList
 }

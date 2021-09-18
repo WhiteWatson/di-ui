@@ -6,6 +6,6 @@ const menuList = (data) => {
         data
     })
 }
-export {
+export default{
     menuList
 }

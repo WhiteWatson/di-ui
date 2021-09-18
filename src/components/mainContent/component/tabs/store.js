@@ -1,4 +1,5 @@
 import Router from '@/router'
+import { setItem} from "@/utils/storage";
 export default {
     namespaced: true,
     state: {
@@ -39,6 +40,8 @@ export default {
                 return bar.name === item
             })
             barList.splice(index, 1)
+            console.log(barList)
+            setItem("bars", state.bars);
             //删除tabs跳转最后一个标签 如果不是当前选择页面或没有tab则不做跳转
             if(state.bars.tabsValue !=item || barList.length==0) return
             Router.push({name:barList[barList.length-1].title})

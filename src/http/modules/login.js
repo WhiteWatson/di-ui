@@ -6,6 +6,6 @@ const login = (data) => {
         data
     })
 }
-export {
+export default{
     login
 }

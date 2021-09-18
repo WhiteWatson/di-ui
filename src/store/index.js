@@ -2,12 +2,34 @@ import vuex from 'vuex'
 import Vue from 'vue'
 import navMenu from '@/components/navMenu/store'
 import tabs from '@/components/mainContent/component/tabs/store'
+import user from '@/view/content/sys/store/user.js'
 Vue.use(vuex)
-export default new vuex.Store(
-    {
-        modules: {
-            navMenu,
-            tabs
-        }
+let Store = {
+    modules: {
+        navMenu,
+        tabs,
+        user
     }
+
+}
+let modules = Store.modules
+sessionStorage.setItem("init",JSON.stringify(modules))
+
+
+
+for (let i in modules) {
+    if (!modules[i].mutations) {
+        modules[i].mutations = {}
+    }
+    modules[i].mutations['resetStore'] = (state)=>{
+        const init = JSON.parse(sessionStorage.getItem("init"))
+        const initState = init[i].state
+        for(let key in initState){
+            state[key] = initState[key]
+        }       
+    }
+}
+
+export default new vuex.Store(
+    Store
 )

@@ -22,6 +22,9 @@ const addRoutes = (menuList = [], routes = []) => {
       addRoutes(menuList[i].children, routes)
     } else {
       routes.push({
+        meta:{
+          reset:menuList[i].reset,
+        },
         name: menuList[i].name,
         path: menuList[i].url,
         // 路由文件写在url下，如/sys/user就在sys下创建user.vue文件
@@ -50,7 +53,6 @@ router.beforeEach(async (to, from, next) => {
   }
   // 加载动态菜单和路由
   const menuTree = store.state.navMenu.navTree;
-  console.log(from)
   if (menuTree && menuTree.length == 0) {
     const menuList = await store.dispatch('navMenu/addMenuList')
     if(!menuList){
@@ -60,6 +62,7 @@ router.beforeEach(async (to, from, next) => {
     let routes = await addRoutes(menuList)
     for (let childRoutes of routes) {
       //为名为‘首页’的路由添加子路由
+      
       router.addRoute('首页', childRoutes)
     }
     //如果首次或者刷新界面，这里会循环遍历路由，如果to找不到对应的路由那么他会再执行一次beforeEach((to, from, next))直到找到对应的路由

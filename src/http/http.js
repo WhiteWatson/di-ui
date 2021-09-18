@@ -2,8 +2,8 @@ import axios from 'axios'
 import Cookies from 'js-cookie'
 import router from '../router'
 import { Message } from 'element-ui'
-import errorList from './errorCode'
 import { Loading } from 'element-ui';
+import {removeAll} from '@/utils/storage'
 const showStatus = (status) => {
     let message = ''
     switch (status) {
@@ -74,7 +74,6 @@ service.interceptors.request.use((config) => {
     if (token) {
         config.headers.token = token
     } else {
-        console.log(router.$router)
         if (router.app._route.name !== 'login') {
             router.push('/login')
             return
@@ -117,20 +116,21 @@ service.interceptors.response.use((response) => {
 
     const { errorCode } = response.data
     if (errorCode != '0000') {
-        let message;
-        switch (errorCode) {
-            case '1004':
-                Cookies.remove('token')
-                message = errorList[errorCode]
-                router.push('/login')
-                break
-            case '1001':
-                message = errorList[errorCode]
-                break
-            default:
-                message = response.data.message
-        }
         if (isShowToast) {
+            let message=''
+            switch (errorCode) {
+                case '1004':
+                    Cookies.remove('token')
+                    removeAll()
+                    message = "token校验失败"
+                    router.push('/login')
+                    break
+                case '1001':
+                    message = "用户名或密码错误"
+                    break
+                default:
+                    message = response.data.message
+            }
             Message({
                 message: message,
                 type: 'warning'
@@ -142,7 +142,6 @@ service.interceptors.response.use((response) => {
     return response.data
 }, (error) => {
     // 错误抛到业务代码
-    console.log(error)
     let errorMsg = {}
     errorMsg.errorCode = -1
     errorMsg.data = null

@@ -24,7 +24,7 @@ Vue.use(Tabs);
 Vue.use(TabPane);
 import { mapActions, mapState, mapMutations } from "vuex";
 import { setItem, getItem } from "@/utils/storage";
- console.log(setItem)
+ 
 export default {
   data() {
     return {};
