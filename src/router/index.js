@@ -4,37 +4,18 @@ import user from '@/view/user/route'
 //import home from '@/view/content/router'
 import Cookies from 'js-cookie'
 import store from '@/store'
+import addRoutes from "./addRouter"
 Vue.use(VueRouter)
 const router = new VueRouter({
   routes: [
     {
       name: '首页',
       path: '/',
-      component: () => import(/* webpackChunkName: "content" */'@/view/content'),
+      component: () => import(/* webpackChunkName: "content" */'@/view/content'), 
     },
     ...user,
   ]
 })
-// 递归添加路由
-const addRoutes = (menuList = [], routes = []) => {
-  for (let i in menuList) {
-    if (menuList[i].children && menuList[i].children.length > 0) {
-      addRoutes(menuList[i].children, routes)
-    } else {
-      routes.push({
-        meta:{
-          reset:menuList[i].reset,
-        },
-        name: menuList[i].name,
-        path: menuList[i].url,
-        // 路由文件写在url下，如/sys/user就在sys下创建user.vue文件
-        component: () => import(`@/view/content${menuList[i].url}`),
-      })
-    }
-
-  }
-  return routes
-}
 router.beforeEach(async (to, from, next) => {
   const token = Cookies.get('token')
   if (to.path === '/login') {
@@ -53,8 +34,10 @@ router.beforeEach(async (to, from, next) => {
   }
   // 加载动态菜单和路由
   const menuTree = store.state.navMenu.navTree;
-  if (menuTree && menuTree.length == 0) {
+  if (!menuTree) {
+   
     const menuList = await store.dispatch('navMenu/addMenuList')
+   
     if(!menuList){
       next()
       return

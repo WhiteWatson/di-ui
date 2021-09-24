@@ -63,7 +63,6 @@ let loadingInstance;
 // 请求拦截器
 service.interceptors.request.use((config) => {
     let { data } = config
-    console.log(data)
     if (data.isShowToast) { isShowToast = data.isShowToast; delete data.isShowToast }
     if (data.loading) { loading = data.loading; delete data.loading }
     //可以开启全局loading
@@ -93,7 +92,6 @@ service.interceptors.request.use((config) => {
 service.interceptors.response.use((response) => {
     const status = response.status
     let message = ''
-
     //关闭弹窗
     if (loading) loadingInstance.close()
 

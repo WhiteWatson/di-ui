@@ -2,11 +2,12 @@ import $http from '@/http/api'
 export default {
     namespaced: true,
     state: {
-        navTree: [],
+        navTree: '',
         collapse:false
     },
     mutations: {
         setNavTree(state, data) {
+            
             state.navTree = data
         },
         setCollapse(state,data){
@@ -18,7 +19,7 @@ export default {
             const { errorCode, data } = await $http.menuList();
             if (errorCode != "0000") {
                 return false;
-            }
+            }  
             commit('setNavTree',data)
             return data
         }
