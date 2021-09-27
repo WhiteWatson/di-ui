@@ -49,6 +49,7 @@ const showStatus = (status) => {
 const service = axios.create({
     // 联调
     method: 'get',
+    //判断是请求代理服务器还是直接请求后端服务，直接请求需后端配置跨域
     baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}`,
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -123,7 +124,7 @@ service.interceptors.response.use((response) => {
                     message = "token校验失败"
                     router.push('/login')
                     break
-                case '1001':
+                case '1002':
                     message = "用户名或密码错误"
                     break
                 default:

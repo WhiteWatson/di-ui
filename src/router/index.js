@@ -36,7 +36,7 @@ router.beforeEach(async (to, from, next) => {
   const menuTree = store.state.navMenu.navTree;
   if (!menuTree) {
    
-    const menuList = await store.dispatch('navMenu/addMenuList')
+    const menuList = await store.dispatch('navMenu/addMenuList',1)
    
     if(!menuList){
       next()

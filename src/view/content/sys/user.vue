@@ -15,7 +15,7 @@
       <el-form-item>
         <el-button type="success" @click="handleQuery">查询</el-button>
       </el-form-item>
-       <el-form-item>
+      <el-form-item>
         <el-button type="primary " @click="addUser">新增用户</el-button>
       </el-form-item>
       <el-form-item>
@@ -27,22 +27,17 @@
       style="margin-top:20px"
       @selection-change="handleSelect"
     >
-      <el-table-column type="selection" width="55"></el-table-column>
-      <el-table-column prop="username" label="用户名"> </el-table-column>
-      <el-table-column prop="realname" label="真实姓名"> </el-table-column>
-      <el-table-column prop="userEmail" label="邮箱"> </el-table-column>
-      <el-table-column prop="mobile" label="手机号"> </el-table-column>
-       <el-table-column label="角色">
-        <template slot-scope="scope">
-          {{ scope.row.roleNames }}
-        </template>
+      <el-table-column
+        v-for="item in userList"
+        :key="item._id"
+        :prop="item.prop"
+        :type="item.type"
+        :label="item.label"
+        :width="item.width"
+        :formatter="item.formatter"
+      >
       </el-table-column>
-      <el-table-column label="性别">
-        <template slot-scope="scope">
-          {{ converSex(scope.row.sex) }}
-        </template>
-      </el-table-column>
-      <el-table-column label="操作"  fixed="right" width="150">
+      <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDel(scope.row)"
@@ -52,8 +47,14 @@
       </el-table-column>
     </el-table>
     <div class="k-9sptci-footer">
-      <el-button type="danger">批量删除</el-button>
-      <el-pagination layout="prev, pager, next" :total="50"> </el-pagination>
+      <el-button type="danger" @click="batchDelete">批量删除</el-button>
+      <el-pagination
+        @current-change="handleQuery"
+        :current-page.sync="pager.pageNum"
+        layout="prev, pager, next"
+        :total="pager.total"
+      >
+      </el-pagination>
     </div>
   </div>
 </template>
@@ -67,6 +68,8 @@ import {
   Table,
   TableColumn,
   Pagination,
+  MessageBox,
+  Message,
 } from "element-ui";
 Vue.use(Form);
 Vue.use(FormItem);
@@ -75,38 +78,91 @@ Vue.use(Button);
 Vue.use(Table);
 Vue.use(TableColumn);
 Vue.use(Pagination);
+Vue.prototype.$message = Message;
 Vue.prototype.$ELEMENT = { size: "small", zIndex: 3000 };
 import { mapState, mapActions } from "vuex";
 export default {
   data() {
     return {
-      userTable: [
+      ids: [],
+      userList: [
         {
-          username: "lisi",
-          realname: "李四",
-          userEmail: "lisi@com",
-          mobile: "18255476585",
-          sex: 0,
+          type: "selection",
+          width:55
         },
         {
-          username: "lisi",
-          realname: "李四",
-          userEmail: "lisi@com",
-          mobile: "18255476585",
-          sex: 0,
+          prop: "username",
+          label: "用户名",
         },
+        {
+          prop: "realname",
+          label: "真实姓名",
+        },
+        {
+          prop: "mobile",
+          label: "手机号",
+        },
+        {
+          prop: "邮箱",
+          label: "userEmail",
+        },
+        {
+          prop: "性别",
+          label: "sex",
+          formatter: (...rest) => {
+            return {
+              0: "男",
+              1: "女",
+            }[rest[2]]
+          },
+        },{
+          prop: "角色",
+          label: "roleNames",
+        }
       ],
     };
   },
   computed: {
-    ...mapState("user", ["userForm"]),
+    ...mapState("user", ["userForm", "userTable", "pager"]),
   },
   methods: {
-    ...mapActions("user", ["handleQuery", "handleReset","addUser"]),
+    ...mapActions("user", ["handleQuery", "handleReset", "addUser"]),
     handleEdit(row) {
       console.log(row);
     },
-    handleSelect() {},
+    //选中
+    handleSelect(id) {
+      let arr = [];
+      id.forEach((item) => {
+        arr.push(item._id);
+      });
+      this.ids = arr;
+      console.log(this.ids);
+    },
+    //删除
+    async handleDel(row, state) {
+      const _id = state ? this.ids : [row._id];
+      try {
+        await MessageBox.confirm("此操作将删除用户信息, 是否继续?", "提示", {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        });
+        const { errorCode } = await this.$http.dellist({ _id });
+        if (errorCode == "0000") {
+          this.$message({
+            type: "success",
+            message: "删除成功",
+          });
+          this.handleQuery();
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    async batchDelete() {
+      this.handleDel(this.ids, 1);
+    },
     converSex(index) {
       return {
         0: "男",
@@ -115,9 +171,7 @@ export default {
     },
   },
   async created() {
-    const { data, errorCode } = await this.$http.userList();
-    if (errorCode != "0000") return;
-    this.userTable = data.userList;
+    this.handleQuery();
   },
 };
 </script>
