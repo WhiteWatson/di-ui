@@ -37,6 +37,19 @@
         :formatter="item.formatter"
       >
       </el-table-column>
+      <el-table-column  label="角色">
+        <template slot-scope="scope">
+          <el-select disabled :value="scope.row.roleNames" multiple placeholder="请选择">
+            <el-option
+              v-for="item in roleList"
+              :key="item._id"
+              :label="item.roleName"
+              :value="item._id"
+            >
+            </el-option>
+          </el-select>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
@@ -56,6 +69,54 @@
       >
       </el-pagination>
     </div>
+    <el-dialog
+      :title="action ? '编辑用户' : '新增用户'"
+      :visible.sync="userVisible"
+    >
+      <el-form ref="userForm" :model="userParams" label-width="80px">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="userParams.username"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="userParams.password" type="password"></el-input>
+        </el-form-item>
+        <el-form-item label="真实姓名" prop="realname">
+          <el-input v-model="userParams.realname"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="userEmail">
+          <el-input v-model="userParams.userEmail"></el-input>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="mobile">
+          <el-input v-model="userParams.mobile"></el-input>
+        </el-form-item>
+        <el-form-item label="性别" prop="sex">
+         <el-select v-model="userParams.sex"> 
+           <el-option label="男" :value="0"></el-option>
+           <el-option label="女" :value="1"></el-option>
+         </el-select>
+        </el-form-item>
+        <el-form-item label="角色" prop="roleNames">
+          <el-select
+            v-model="userParams.roleNames"
+            multiple
+            placeholder="请选择"
+          >
+            <el-option
+              v-for="item in roleList"
+              :key="item._id"
+              :label="item.roleName"
+              :value="item._id"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+
+        <el-form-item>
+          <el-button type="primary" @click="confirm">确定</el-button>
+          <el-button @click="cancel">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -70,6 +131,9 @@ import {
   Pagination,
   MessageBox,
   Message,
+  Dialog,
+  Select,
+  Option,
 } from "element-ui";
 Vue.use(Form);
 Vue.use(FormItem);
@@ -78,6 +142,9 @@ Vue.use(Button);
 Vue.use(Table);
 Vue.use(TableColumn);
 Vue.use(Pagination);
+Vue.use(Dialog);
+Vue.use(Select);
+Vue.use(Option);
 Vue.prototype.$message = Message;
 Vue.prototype.$ELEMENT = { size: "small", zIndex: 3000 };
 import { mapState, mapActions } from "vuex";
@@ -85,10 +152,20 @@ export default {
   data() {
     return {
       ids: [],
+      action: 0,
+      userParams: {
+        username: "",
+        realname: "",
+        mobile: "",
+        userEmail: "",
+        password: "",
+        roleNames: [],
+      },
+      userVisible: false,
       userList: [
         {
           type: "selection",
-          width:55
+          width: 55,
         },
         {
           prop: "username",
@@ -103,32 +180,80 @@ export default {
           label: "手机号",
         },
         {
-          prop: "邮箱",
-          label: "userEmail",
+          prop: "userEmail",
+          label: "邮箱",
         },
         {
-          prop: "性别",
-          label: "sex",
+          prop: "sex",
+          label: "性别",
           formatter: (...rest) => {
             return {
               0: "男",
               1: "女",
-            }[rest[2]]
+            }[rest[2]];
           },
-        },{
-          prop: "角色",
-          label: "roleNames",
         }
       ],
+      roleList: [], //角色列表
     };
   },
   computed: {
     ...mapState("user", ["userForm", "userTable", "pager"]),
   },
   methods: {
-    ...mapActions("user", ["handleQuery", "handleReset", "addUser"]),
+    addUser() {
+      this.action = 0;
+      this.userVisible = true;
+    },
+    //新增用户
+    async confirm() {
+      const { errorCode } = await this.$http.addUser({
+        ...this.userParams,
+        action: this.action,
+      });
+      if (errorCode === "0000") {
+        this.$message({
+          type: "success",
+          message: "操作成功",
+        });
+        this.handleQuery();
+        this.$refs["userForm"].resetFields();
+        this.userVisible = false;
+      }
+    },
+    cancel() {
+      this.$refs["userForm"].resetFields();
+      this.userVisible = false;
+    },
+    ...mapActions("user", ["handleQuery", "handleReset"]),
     handleEdit(row) {
-      console.log(row);
+      //action=1 编辑
+      this.action = 1;
+      this.userVisible = true;
+      const {
+        _id,
+        username,
+        realname,
+        mobile,
+        userEmail,
+        password,
+        sex,
+        roleNames,
+      } = row;
+      //表单渲染完成再赋值 否者重置有问题
+      this.$nextTick(()=>{
+        this.userParams = {
+        username,
+        realname,
+        mobile,
+        userEmail,
+        password,
+        roleNames,
+        sex,
+        _id,
+      };
+      })
+      
     },
     //选中
     handleSelect(id) {
@@ -169,9 +294,17 @@ export default {
         1: "女",
       }[index];
     },
+    //获取角色列表
+    async queryRoleList() {
+      const { errorCode, data } = await this.$http.roleList(this.roleForm);
+      if (errorCode === "0000") {
+        this.roleList = data.rolelist;
+      }
+    },
   },
   async created() {
     this.handleQuery();
+    this.queryRoleList();
   },
 };
 </script>

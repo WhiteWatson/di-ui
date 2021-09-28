@@ -19,7 +19,12 @@
         <el-button @click="handleReset($refs['roleForm'])">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="roleData" style="width: 100%">
+    <el-table
+      :data="roleData"
+      style="width: 100%"
+      highlight-current-row
+      @current-change="handleCurrentChange"
+    >
       <el-table-column prop="roleName" label="角色名称"> </el-table-column>
       <el-table-column prop="remark" label="角色备注"> </el-table-column>
       <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
@@ -32,6 +37,29 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="k-51q64z">菜单授权</div>
+    <el-tree
+      :data="menuList"
+      show-checkbox
+      node-key="_id"
+      ref="tree"
+      :props="{ label: 'name' }"
+    >
+     
+      <div class="k-9sptcz-content" slot-scope="{  data }">
+        <span class="k-9sptcz-title">{{data.name}}</span>
+        <el-button size="mini" type="success" 
+          >{{data.menuType==1?'菜单':'按钮'}}</el-button
+        >
+      </div>
+    </el-tree>
+    <el-button
+      size="small"
+      class="k-731ncg-btn"
+      type="success"
+      @click="handlePrem"
+      >确认授权</el-button
+    >
     <el-dialog
       :title="action ? '编辑角色' : '新增角色'"
       :visible.sync="roleVisible"
@@ -67,15 +95,17 @@ import {
   Input,
   Button,
   Message,
+  Tree,
 } from "element-ui";
 Vue.prototype.$message = Message;
-Vue.use(Table);
-Vue.use(TableColumn);
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Input);
 Vue.use(Button);
 Vue.use(Dialog);
+Vue.use(Tree);
+Vue.use(Table);
+Vue.use(TableColumn);
 export default {
   data() {
     return {
@@ -86,6 +116,8 @@ export default {
       },
       roleParams: {},
       roleVisible: false,
+      menuList: [],
+      roleid: "",
     };
   },
 
@@ -122,18 +154,67 @@ export default {
           type: "success",
           message: "删除成功",
         });
-        this.handleQuery()
+        this.handleQuery();
       }
     },
+    //确认授权 类型为button需传入权限标识permSign
+    async handlePrem() {
+      const halfKeys = this.$refs.tree.getHalfCheckedKeys();
+      const checkedKeys = this.$refs.tree.getCheckedKeys();
+      const checkedNodes = this.$refs.tree.getCheckedNodes();
+      //菜单集合
+      const permId = halfKeys.concat(checkedKeys);
+      //权限标识
+      let permSign = [];
+      checkedNodes.forEach((item) => {
+        //如果是按钮则加入标识
+        if (item.menuType == 2) {
+          permSign.push(item.limitCode);
+        }
+      });
+      const { errorCode } = await this.$http.addRoleList({
+        _id: this.roleid,
+        permSign,
+        permId,
+        action: 1,
+      });
+      if (errorCode === "0000") {
+        this.$message({
+          type: "success",
+          message: "权限设置成功",
+        });
+      }
+    },
+    //获取角色
     async handleQuery() {
       const { errorCode, data } = await this.$http.roleList(this.roleForm);
       if (errorCode === "0000") {
         this.roleData = data.rolelist;
       }
     },
+    //选中列
+    handleCurrentChange(row) {
+      this.roleid = row._id;
+      this.$refs.tree.setCheckedKeys(row.permId);
+      //    const { errorCode, data } = await this.$http.menuList({_ids:row.permId});
+      //   if (errorCode === "0000") {
+      //     this.menuList = data;
+      //   }
+    },
+    //获取全量菜单
+    async queryAllMenu() {
+      /**
+       * @param {number} 1代表获取全部菜单
+       */
+      const { errorCode, data } = await this.$http.menuList({menuNum:1});
+      if (errorCode === "0000") {
+        this.menuList = data;
+      }
+    },
   },
   created() {
     this.handleQuery();
+    this.queryAllMenu();
   },
 };
 </script>

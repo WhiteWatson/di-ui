@@ -28,8 +28,6 @@ export default {
         handleReset() {
             arguments[1].resetFields()
         },
-        addUser() {
-
-        }
+      
     }
 }

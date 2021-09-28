@@ -15,7 +15,16 @@ const dellist = (data) => {
         data
     })
 }
+//添加&编辑用户
+const addUser = (data) => {
+    return $http({
+        url:'/api/user/updateaddlist',
+        method:'post',
+        data
+    })
+}
 export default{
     userList,
-    dellist
+    dellist,
+    addUser
 }
