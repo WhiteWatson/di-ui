@@ -175,6 +175,7 @@ export default {
       const { errorCode } = await this.$http.addRoleList({
         _id: this.roleid,
         permSign,
+        checkedKeys,
         permId,
         action: 1,
       });
@@ -195,7 +196,9 @@ export default {
     //选中列
     handleCurrentChange(row) {
       this.roleid = row._id;
-      this.$refs.tree.setCheckedKeys(row.permId);
+      console.log(row)
+      
+      this.$refs.tree.setCheckedKeys(row.checkedKeys);
       //    const { errorCode, data } = await this.$http.menuList({_ids:row.permId});
       //   if (errorCode === "0000") {
       //     this.menuList = data;

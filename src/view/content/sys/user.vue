@@ -240,7 +240,7 @@ export default {
         sex,
         roleNames,
       } = row;
-      //表单渲染完成再赋值 否者重置有问题
+      //表单渲染完成再赋值 否则重置有问题
       this.$nextTick(()=>{
         this.userParams = {
         username,
