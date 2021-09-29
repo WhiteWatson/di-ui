@@ -3,7 +3,7 @@
     <div
       :class="collapse ? 'k-0g35po-title k-0g35po-collapse' : 'k-0g35po-title'"
     >
-      UI
+      {{appName}}
     </div>
     <div class="k-0g35po-conent">
       <div class="k-0g35po-continer">
@@ -19,8 +19,12 @@ import navMenu from "@/components/navMenu";
 import mainContent from "@/components/mainContent";
 import headerBar from "@/components/headerBar";
 import { mapState } from "vuex"; 
-console.log(mapState)
 export default {
+  data(){
+    return {
+      appName:process.env.VUE_APP_NAME
+    }
+  },
   components: {
     navMenu,
     mainContent,

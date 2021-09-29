@@ -9,13 +9,17 @@ let Store = {
         navMenu,
         tabs,
         user
+    },
+    mutations:{
+        // resetStore(state){
+          
+        //     state = JSON.parse(sessionStorage.getItem("init"))
+        // }
     }
 
 }
 let modules = Store.modules
 sessionStorage.setItem("init",JSON.stringify(modules))
-
-
 
 for (let i in modules) {
     if (!modules[i].mutations) {

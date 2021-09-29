@@ -22,6 +22,7 @@
     <el-table
       :data="roleData"
       style="width: 100%"
+      ref="singleTable"
       highlight-current-row
       @current-change="handleCurrentChange"
     >
@@ -45,12 +46,11 @@
       ref="tree"
       :props="{ label: 'name' }"
     >
-     
-      <div class="k-9sptcz-content" slot-scope="{  data }">
-        <span class="k-9sptcz-title">{{data.name}}</span>
-        <el-button size="mini" type="success" 
-          >{{data.menuType==1?'菜单':'按钮'}}</el-button
-        >
+      <div class="k-9sptcz-content" slot-scope="{ data }">
+        <span class="k-9sptcz-title">{{ data.name }}</span>
+        <el-button size="mini" type="success">{{
+          data.menuType == 1 ? "菜单" : "按钮"
+        }}</el-button>
       </div>
     </el-tree>
     <el-button
@@ -58,6 +58,7 @@
       class="k-731ncg-btn"
       type="success"
       @click="handlePrem"
+      :disabled="checkedRow?false:true"
       >确认授权</el-button
     >
     <el-dialog
@@ -118,6 +119,7 @@ export default {
       roleVisible: false,
       menuList: [],
       roleid: "",
+      checkedRow: "",
     };
   },
 
@@ -184,6 +186,12 @@ export default {
           type: "success",
           message: "权限设置成功",
         });
+        await this.handleQuery();
+        for (var item in this.roleData) {
+          if (this.checkedRow._id == this.roleData[item]._id) {
+            this.$refs.singleTable.setCurrentRow(this.roleData[item]);
+          }
+        }
       }
     },
     //获取角色
@@ -195,9 +203,10 @@ export default {
     },
     //选中列
     handleCurrentChange(row) {
+      if (!row) return;
       this.roleid = row._id;
-      console.log(row)
-      
+
+      this.checkedRow = row;
       this.$refs.tree.setCheckedKeys(row.checkedKeys);
       //    const { errorCode, data } = await this.$http.menuList({_ids:row.permId});
       //   if (errorCode === "0000") {
@@ -209,7 +218,7 @@ export default {
       /**
        * @param {number} 1代表获取全部菜单
        */
-      const { errorCode, data } = await this.$http.menuList({menuNum:1});
+      const { errorCode, data } = await this.$http.menuList({ menuNum: 1 });
       if (errorCode === "0000") {
         this.menuList = data;
       }
