@@ -6,20 +6,26 @@
           <el-input
             v-model="loginForm.username"
             placeholder="用户名"
+            size="large"
           ></el-input>
         </el-form-item>
         <el-form-item label-width="0">
           <el-input
             v-model="loginForm.password"
             type="password"
+            size="large"
             placeholder="密码"
           ></el-input>
         </el-form-item>
         <div class="k-dt8vs8-login" label-width="0">
-          <el-button style="width:45%;" @click.native.prevent="reset"
+          <el-button
+            size="large"
+            style="width:45%;"
+            @click.native.prevent="reset"
             >重 置</el-button
           >
           <el-button
+            size="large"
             type="primary"
             style="width:45%;"
             @click.native.prevent="login"
@@ -33,41 +39,42 @@
 <script>
 import Vue from "vue";
 import { Button, Form, Input, FormItem } from "element-ui";
-import { mapMutations } from "vuex"
+import { mapMutations } from "vuex";
 Vue.use(Button);
 Vue.use(Form);
 Vue.use(Input);
 Vue.use(FormItem);
-import Cookie from 'js-cookie'
+import Cookie from "js-cookie";
 export default {
   data() {
     return {
       loginForm: {
-        username: '',
-        password: '',
+        username: "",
+        password: "",
       },
     };
   },
-  methods:{
-    ...mapMutations('permSign',['setPermSign']),
-    async login(){
-      const {errorCode,data} =await this.$http.login({...this.loginForm, isShowToast:true})
-      if(errorCode === '0000'){
+  methods: {
+    ...mapMutations("permSign", ["setPermSign"]),
+    async login() {
+      const { errorCode, data } = await this.$http.login({
+        ...this.loginForm,
+        isShowToast: true,
+      });
+      if (errorCode === "0000") {
         //返回token与按钮权限permSign
-        Cookie.set('token',data.token)
-        Cookie.set('user',`${this.loginForm.username},${this.loginForm.password}`)
-        this.setPermSign(data.permSign)
-        this.$router.push('/')
+        Cookie.set("token", data.token);
+        Cookie.set(
+          "user",
+          `${this.loginForm.username},${this.loginForm.password}`
+        );
+        this.setPermSign(data.permSign);
+        this.$router.push("/");
       }
-
     },
-    reset(){
-
-    }
+    reset() {},
   },
-  created() {
-
-  },
+  created() {},
 };
 </script>
 <style src="./index.less" lang="less"></style>
