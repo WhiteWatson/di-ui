@@ -33,6 +33,7 @@
 <script>
 import Vue from "vue";
 import { Button, Form, Input, FormItem } from "element-ui";
+import { mapMutations } from "vuex"
 Vue.use(Button);
 Vue.use(Form);
 Vue.use(Input);
@@ -42,16 +43,20 @@ export default {
   data() {
     return {
       loginForm: {
-        username: "",
-        password: "",
+        username: '',
+        password: '',
       },
     };
   },
   methods:{
+    ...mapMutations('permSign',['setPermSign']),
     async login(){
       const {errorCode,data} =await this.$http.login({...this.loginForm, isShowToast:true})
       if(errorCode === '0000'){
+        //返回token与按钮权限permSign
         Cookie.set('token',data.token)
+        Cookie.set('user',`${this.loginForm.username},${this.loginForm.password}`)
+        this.setPermSign(data.permSign)
         this.$router.push('/')
       }
 

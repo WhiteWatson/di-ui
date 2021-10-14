@@ -53,14 +53,14 @@
       :title="action ? '编辑菜单' : '新增菜单'"
       :visible.sync="menuVisible"
     >
-      <el-form ref="menuForm" :model="menuForm" label-width="80px">
+      <el-form ref="menuForm" :rules="menuRule" :model="menuForm" label-width="80px">
         <el-form-item label="名称" prop="name">
           <el-input v-model="menuForm.name"></el-input>
         </el-form-item>
         <el-form-item label="路由" v-show="menuForm.menuType==1" prop="url">
           <el-input v-model="menuForm.url"></el-input>
         </el-form-item>
-        <el-form-item v-show="menuForm.menuType==2" label="标识" prop="url">
+        <el-form-item v-show="menuForm.menuType==2" label="标识" prop="limitCode">
           <el-input v-model="menuForm.limitCode"></el-input>
         </el-form-item>
         <el-form-item label="图标" v-show="menuForm.menuType==1" prop="icon">
@@ -157,6 +157,15 @@ export default {
           prop: "orderNum",
         }
       ],
+      menuRule:{
+        name: [
+          { required: true, message: "请输入菜单名称", trigger: "blur" },
+          { min: 2, max: 5, message: "长度在 2 到 5 个字符", trigger: "blur" },
+        ],
+        url: [
+          { required: true, message: "请输入路由", trigger: "blur" },
+        ]
+      }
     };
   },
   computed: {

@@ -3,18 +3,21 @@ import Vue from 'vue'
 import navMenu from '@/components/navMenu/store'
 import tabs from '@/components/mainContent/component/tabs/store'
 import user from '@/view/content/sys/store/user.js'
+import permSign from './modules/permSign'
 Vue.use(vuex)
 let Store = {
     modules: {
         navMenu,
         tabs,
-        user
+        user,
+        permSign
     },
     mutations:{
         // resetStore(state){
           
         //     state = JSON.parse(sessionStorage.getItem("init"))
         // }
+    
     }
 
 }

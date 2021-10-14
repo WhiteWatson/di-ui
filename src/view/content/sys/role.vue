@@ -31,7 +31,8 @@
       <el-table-column prop="updateTime" label="更新时间"> </el-table-column>
       <el-table-column label="操作" fixed="right" width="150">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+          <!-- 传入设置按钮时候的权限标识edit -->
+          <per-button size="mini" perm="edit"  @click="handleEdit(scope.row)">编辑</per-button>
           <el-button size="mini" type="danger" @click="handleDel(scope.row)"
             >删除</el-button
           >
@@ -58,14 +59,19 @@
       class="k-731ncg-btn"
       type="success"
       @click="handlePrem"
-      :disabled="checkedRow?false:true"
+      :disabled="checkedRow ? false : true"
       >确认授权</el-button
     >
     <el-dialog
       :title="action ? '编辑角色' : '新增角色'"
       :visible.sync="roleVisible"
     >
-      <el-form ref="roleForm" :model="roleParams" label-width="80px">
+      <el-form
+        ref="roleForm"
+        :model="roleParams"
+        :rules="roleRule"
+        label-width="80px"
+      >
         <el-form-item label="名称" prop="roleName">
           <el-input v-model="roleParams.roleName"></el-input>
         </el-form-item>
@@ -99,6 +105,8 @@ import {
   Tree,
 } from "element-ui";
 Vue.prototype.$message = Message;
+//引入按钮权限组件
+import perButton from "@/components/perm/perButton"
 Vue.use(Form);
 Vue.use(FormItem);
 Vue.use(Input);
@@ -108,6 +116,9 @@ Vue.use(Tree);
 Vue.use(Table);
 Vue.use(TableColumn);
 export default {
+  components:{
+    perButton
+  },
   data() {
     return {
       action: 0,
@@ -120,6 +131,12 @@ export default {
       menuList: [],
       roleid: "",
       checkedRow: "",
+      roleRule: {
+        roleName: [
+          { required: true, message: "请输入角色名", trigger: "blur" },
+          { min: 2, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" },
+        ],
+      }
     };
   },
 
@@ -128,6 +145,9 @@ export default {
     addrole() {
       this.action = 0;
       this.roleVisible = true;
+    },
+    handleEdit(val){
+      console.log(val)
     },
     async confirm() {
       const { errorCode } = await this.$http.addRoleList({
