@@ -27,7 +27,7 @@ router.beforeEach(async (to, from, next) => {
     next()
     return
   }
-  // 如果访问非登录界面，token不存在，代表未登录，则跳转到登录界面
+  // 如果访问非登录界面，token不存在，则跳转到登录界面
   if (!token) {
     next({ path: '/login' })
     return

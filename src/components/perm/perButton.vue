@@ -21,7 +21,7 @@ export default {
     };
   },
   watch: {
-      //不知道为什么 只有深度监听才能监听到perm？？？？？？
+      //子组件props首次获取到父组件传来的值时，需要执行函数，此时就需要将immediate设为true
       "perm":{
         handler:function(val){
             this.isPerm = this.hasPerm(val);
@@ -32,7 +32,7 @@ export default {
   methods: {
       handleClick: function () {
       // 按钮操作处理函数
-      this.$emit('click', {})
+      this.$emit('click')
     }, 
     hasPerm,
   }

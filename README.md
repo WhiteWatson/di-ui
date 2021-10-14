@@ -1,24 +1,23 @@
-# social_manage
+# VUE——ElementUI 权限管理系统(前端)
 
-## Project setup
-```
-npm install
-```
+## 登录页
+![登录](./assets/login.jpg)
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## 首页
+![首页](./assets/home.jpg)
 
-### Compiles and minifies for production
-```
-npm run build
-```
+## 菜单管理
+![菜单](./assets/menu.jpg)
 
-### Lints and fixes files
-```
-npm run lint
-```
+![菜单](./assets/menu2.jpg)
+## 用户管理
+![首页](./assets/user.jpg)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+## 用户管理
+![首页](./assets/user2.jpg)
+
+## 角色管理
+![首页](./assets/role.jpg)
+
+## 后端地址
+see [后端地址](https://gitee.com/cat-ui/catui-server)
