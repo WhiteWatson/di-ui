@@ -13,7 +13,6 @@
 ## 用户管理
 ![首页](./assets/user.jpg)
 
-## 用户管理
 ![首页](./assets/user2.jpg)
 
 ## 角色管理
