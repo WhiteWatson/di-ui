@@ -47,7 +47,6 @@ const showStatus = (status) => {
 }
 
 const service = axios.create({
-    // 联调
     method: 'get',
     //判断是请求代理服务器还是直接请求后端服务，直接请求需后端配置跨域
     baseURL: process.env.VUE_APP_API_MODE === 'proxy' ? `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVER_PORT}` : `${process.env.VUE_APP_API}`,

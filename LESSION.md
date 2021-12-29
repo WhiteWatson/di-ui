@@ -51,7 +51,7 @@
 参考[安装mongodb](https://www.runoob.com/nodejs/nodejs-install-setup.html)
 3. 代码clone
 
-[git地址](https://gitee.com/cat-ui/catui-server)
+[点击进入git仓库地址](https://gitee.com/cat-ui/catui-server)
 
 4. 数据库配置
 找到主目录下 .env文件
@@ -73,18 +73,18 @@ JWT_SECRET=abcd1234
 集合地址：主目录下dbjson
 如果不导入,集合中只有一个菜单管理和一个用户（admin,123456),需要自己手动添加其它菜单
 
-6. 项目启动
-npm install
+6. 项目启动  
+npm install  
 npm run dev
 
 ### 前端
 1. 代码clone
 
-[git地址](https://gitee.com/cat-ui/di-ui)
+[点击进入git仓库地址](https://gitee.com/cat-ui/di-ui)  
+
 2. 后端地址配置
 
 主目录下.env (默认无需配置)
-
 ```
 # 项目信息
 VUE_APP_NAME = MANAGE
@@ -108,8 +108,8 @@ VUE_APP_PATH=http://localhost:8800
 # optional value: proxy, direct （如果设置proxy 需要启动代理服务，目录serve/proxy.js）
 VUE_APP_API_MODE=direct
 ```
-3. 启动
-npm Install
+3. 启动  
+    > npm Install  
 npm run serve
 访问地址:http://localhost:8800
 
