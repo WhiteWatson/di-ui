@@ -3,7 +3,7 @@ import Cookies from 'js-cookie'
 import router from '../router'
 import { Message } from 'element-ui'
 import { Loading } from 'element-ui';
-import {removeAll} from '@/utils/storage'
+import { removeAll } from '@/utils/storage'
 const showStatus = (status) => {
     let message = ''
     switch (status) {
@@ -115,7 +115,7 @@ service.interceptors.response.use((response) => {
     const { errorCode } = response.data
     if (errorCode != '0000') {
         if (isShowToast) {
-            let message=''
+            let message = ''
             switch (errorCode) {
                 case '1004':
                     Cookies.remove('token')

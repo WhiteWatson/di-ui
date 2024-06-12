@@ -1,11 +1,11 @@
 import $http from '../http'
 const login = (data) => {
     return $http({
-        url:'/api/user/login',
-        method:'post',
+        url: '/api/api/user/login',
+        method: 'post',
         data
     })
 }
-export default{
+export default {
     login
 }

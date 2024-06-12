@@ -1,6 +1,18 @@
 module.exports = {
+    // devServer: {
+    //     port: process.env.VUE_APP_PORT,     // 端口号
+    // },
     devServer: {
-        port: process.env.VUE_APP_PORT,     // 端口号
+        proxy: {
+            '/api': {
+                target: process.env.VUE_APP_API, // 后端服务器地址
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/api': '' // 重写请求路径，将 "/api" 去掉
+                }
+            }
+        },
+        port: process.env.VUE_APP_PORT,
     },
     configureWebpack: {
         resolve: {
